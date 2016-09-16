@@ -1,7 +1,8 @@
 FROM fedora:24
 MAINTAINER Tomas Tomecek "ttomecek@redhat.com"
-RUN dnf install -y git python-pip gcc python-devel postgresql-devel redhat-rpm-config python2-pytest nmap-ncat python-psycopg2 python-six && \
-    npm install -g bower
+RUN dnf install -y uwsgi nginx git python-pip gcc python-devel postgresql-devel redhat-rpm-config python2-pytest nmap-ncat python-psycopg2 python-six npm
+
+RUN npm install -g bower
 
 ARG USER_ID=1000
 RUN useradd -o -u ${USER_ID} reporter && \

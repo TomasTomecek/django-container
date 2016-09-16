@@ -1,0 +1,4 @@
+django-debug-toolbar
+ipdb
+ipython
+django_extensions

@@ -1,0 +1,9 @@
+FROM django-container-base
+MAINTAINER Tomas Tomecek "ttomecek@redhat.com"
+
+COPY ./requirements-devel.txt /opt/app/
+RUN pip install --user -r ./requirements-devel.txt
+
+# TODO: install zsh with prezto
+
+CMD ["bash"]
