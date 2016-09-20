@@ -7,7 +7,8 @@ services:
     image: django-container-base:latest
     ports:
      - "8000:8000"
-    volumes: []
+    volumes:
+     - .:/opt/app
     environment:
      - POSTGRESQL_DATABASE=django-container
      - POSTGRESQL_USER=user
