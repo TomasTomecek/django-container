@@ -52,14 +52,14 @@ services:
      - POSTGRESQL_USER=user
      - POSTGRESQL_PASSWORD=password
      - POSTGRESQL_CONTAINER_OPTS=clear_pgdata_pidfile = true
-  #   migrator:
-  #     build: .
-  #     environment:
-  #      - POSTGRESQL_DATABASE=trello-reporting
-  #      - POSTGRESQL_USER=user
-  #      - POSTGRESQL_PASSWORD=password
-  #     volumes:
-  #      - .:/opt/app/
-  #     links:
-  #      - db
-  #     command: bash -c "ncat -v -w 30 db 5432 && python /opt/app/manage.py makemigrations && exec python /opt/app/manage.py migrate --no-input"
+  migrator:
+    image: django-container-base:latest
+    environment:
+     - POSTGRESQL_DATABASE=trello-reporting
+     - POSTGRESQL_USER=user
+     - POSTGRESQL_PASSWORD=password
+    volumes:
+     - .:/opt/app/
+    links:
+     - db
+    command: bash -c "until ncat -v -w 3 db 5432 ; do sleep 1 ; done && python /opt/app/manage.py makemigrations && exec python /opt/app/manage.py migrate --no-input"
