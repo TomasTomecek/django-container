@@ -1,18 +1,35 @@
 version: "2"
 services:
-  web:
+  # base image shared by almost all images
+  # let's ensure it's built
+  base:
     build:
       context: .
       dockerfile: Dockerfile.base
     image: django-container-base:latest
+    command: "true"
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    links:
+      - uwsgi
+    image: django-container-nginx:latest
     ports:
-     - "8000:8000"
+      - "8000:8000"
+  uwsgi:
+    build:
+      context: .
+      dockerfile: Dockerfile.uwsgi
+    image: django-container-uwsgi:latest
+    links:
+      - base
     volumes:
-     - .:/opt/app
+      - .:/opt/app
     environment:
-     - POSTGRESQL_DATABASE=django-container
-     - POSTGRESQL_USER=user
-     - POSTGRESQL_PASSWORD=password
+      - POSTGRESQL_DATABASE=django-container
+      - POSTGRESQL_USER=user
+      - POSTGRESQL_PASSWORD=password
   # this image is meant for development: having shell in the app
   dev:
     build:
@@ -21,6 +38,8 @@ services:
     image: django-container-dev:latest
     tty: true
     stdin_open: true
+    links:
+      - base
     command: bash -l
   db:
     image: praiskup/postgresql:APIv1.0.1-fedora23
@@ -39,7 +58,6 @@ services:
   #      - POSTGRESQL_DATABASE=trello-reporting
   #      - POSTGRESQL_USER=user
   #      - POSTGRESQL_PASSWORD=password
-  #      - API_KEY
   #     volumes:
   #      - .:/opt/app/
   #     links:
