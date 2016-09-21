@@ -27,9 +27,9 @@ services:
     volumes:
       - .:/opt/app
     environment:
-      - POSTGRESQL_DATABASE=django-container
-      - POSTGRESQL_USER=user
-      - POSTGRESQL_PASSWORD=password
+      - POSTGRESQL_DATABASE=the_project
+      - POSTGRESQL_USER=the_user
+      - POSTGRESQL_PASSWORD=p4$$word
   # this image is meant for development: having shell in the app
   dev:
     build:
@@ -47,19 +47,19 @@ services:
       - ./deployment/postgresql/:/usr/share/cont-volume/postgresql/
       - ./db:/var/lib/pgsql/data
     environment:
-     - CONT_DEBUG=3
-     - POSTGRESQL_DATABASE=django-container
-     - POSTGRESQL_USER=user
-     - POSTGRESQL_PASSWORD=password
-     - POSTGRESQL_CONTAINER_OPTS=clear_pgdata_pidfile = true
+      - CONT_DEBUG=3
+      - POSTGRESQL_DATABASE=the_project
+      - POSTGRESQL_USER=the_user
+      - POSTGRESQL_PASSWORD=p4$$word
+      - POSTGRESQL_CONTAINER_OPTS=clear_pgdata_pidfile = true
   migrator:
     image: django-container-base:latest
     environment:
-     - POSTGRESQL_DATABASE=trello-reporting
-     - POSTGRESQL_USER=user
-     - POSTGRESQL_PASSWORD=password
+      - POSTGRESQL_DATABASE=the_project
+      - POSTGRESQL_USER=the_user
+      - POSTGRESQL_PASSWORD=p4$$word
     volumes:
-     - .:/opt/app/
+      - .:/opt/app/
     links:
-     - db
+      - db
     command: bash -c "until ncat -v -w 3 db 5432 ; do sleep 1 ; done && python /opt/app/manage.py makemigrations && exec python /opt/app/manage.py migrate --no-input"

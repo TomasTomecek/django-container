@@ -2,6 +2,6 @@ FROM django-container-base
 
 USER root
 RUN dnf install -y uwsgi uwsgi-plugin-python
-USER reporter
+USER app
 
 CMD ["uwsgi", "/opt/app/deployment/uwsgi/prod.ini"]
