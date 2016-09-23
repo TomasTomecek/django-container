@@ -1,19 +1,32 @@
 version: "1"
 services:
-  # Add your containers here, specifying the base image you want to build from
-  # For example:
-  #
-  # web:
-  #   image: ubuntu:trusty
-  #   ports:
-  #     - "80:80"
-  #   command: ['/usr/bin/dumb-init', '/usr/sbin/apache2ctl', '-D', 'FOREGROUND']
-  #   dev_overrides:
-  #     environment:
-  #       - "DEBUG=1"
-  #
-registries: {}
-  # Add optional registries used for deployment. For example:
-  #  google:
-  #    url: https://gcr.io
-  #    namespace: my-cool-project-xxxxxx   
+  web:
+    image: fedora:24
+    expose:
+      - "8000"
+    links:
+      - "db"
+    command: ['/opt/app/manage.py', 'runserver', '0.0.0.0:8000']
+    dev_overrides:
+      environment:
+        - "DEBUG=1"
+      volumes:
+        - "$PWD:/opt/app"
+    environment:
+      POSTGRESQL_DATABASE: the_project
+      POSTGRESQL_USER: the_user
+      POSTGRESQL_PASSWORD: p4$$word
+  db:
+    image: praiskup/postgresql:APIv1.0.1-fedora23
+    volumes:
+      - "/var/lib/pgsql/data"
+    expose:
+      - "5432"
+    command: ['container-start']
+    environment:
+      CONT_DEBUG: "3"
+      POSTGRESQL_DATABASE: the_project
+      POSTGRESQL_USER: the_user
+      POSTGRESQL_PASSWORD: p4$$word
+      POSTGRESQL_CONTAINER_OPTS: "clear_pgdata_pidfile = true ; assert_external_data = false"
+    user: "26"

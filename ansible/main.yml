@@ -4,18 +4,50 @@
 # Add any roles or other modules you'll need to this directory too.
 # For many examples of roles, check out Ansible Galaxy: https://galaxy.ansible.com/
 #
-# - hosts: all
-#   gather_facts: false
-#   tasks:
-#     - raw: which python || apt-get update
-#     - raw: (which python && which aptitude) || apt-get install -y python python-apt aptitude
-# - hosts: web
-#   tasks:
-#     - name: Upgrade APT
-#       apt: upgrade=yes
-#     - name: Install ca-certificates
-#       apt: name=ca-certificates state=latest
-#     - name: Install dumb-init
-#       apt: deb=https://github.com/Yelp/dumb-init/releases/download/v1.0.2/dumb-init_1.0.2_amd64.deb
-#     - name: Install Apache
-#       apt: name=apache2 state=latest
+- hosts: all
+  gather_facts: false
+  tasks:
+    - raw: "which python || dnf install -y /usr/bin/python"
+    - raw: "rpm -q python2-dnf || dnf install -y python2-dnf"
+- hosts: web
+  tasks:
+    - name: Update to latest packages
+      dnf:
+        name: "*"
+        state: "latest"
+    - name: Install required packages
+      dnf:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - python-pip
+        - python-psycopg2
+    - name: Add deployment user
+      user:
+        name: app
+        state: present
+        createhome: yes
+        home: /opt/app
+    # this can be incredibly slow: copy as few files as possible
+    - name: Copy source
+      copy:
+        src: "{{ item }}"
+        dest: /opt/app
+        owner: app
+      with_items:
+        - "/ansible-container/the_project"
+        - "/ansible-container/requirements.txt"
+        - "/ansible-container/manage.py"
+    - name: Install python requirements
+      pip:
+        requirements: /opt/app/requirements.txt
+#    - name: Wait for postgres
+#      wait_for:
+#        host: db
+#        port: 5432
+#        delay: 10
+#    - name: Apply database migrations
+#      command: python manage.py migrate --noinput
+#      args:
+#        chdir: /opt/app
+#      remote_user: app
