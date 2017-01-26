@@ -11,17 +11,8 @@
     - raw: "rpm -q python2-dnf || dnf install -y python2-dnf"
 - hosts: web
   tasks:
-    - name: Update to latest packages
-      dnf:
-        name: "*"
-        state: "latest"
     - name: Install required packages
-      dnf:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - python-pip
-        - python-psycopg2
+      shell: "dnf clean all && dnf install -y python-pip python-psycopg2"
     - name: Add deployment user
       user:
         name: app
