@@ -7,7 +7,7 @@
 - hosts: all
   gather_facts: false
   tasks:
-    - raw: "which python || dnf install -y /usr/bin/python"
+    - raw: "[ -f /usr/bin/python ] || dnf install -y /usr/bin/python"
     - raw: "rpm -q python2-dnf || dnf install -y python2-dnf"
 - hosts: web
   tasks:
